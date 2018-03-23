@@ -8,7 +8,7 @@ Dependent upon [jq](https://stedolan.github.io/jq/), getopts, and the [Agave CLI
 
 Clone the repo, enable bash completion, and add the contents of the cloned repo to your path. Then, pull and cache a valid SD2E access token using the Agave CLI.
 ```
-$ git clone https://github.com/johnfonner/abaco-cli.git
+$ git clone https://github.com/TACC-Cloud/abaco-cli.git
 $ source abaco-cli/abaco-completion.sh
 $ $ export PATH=$PATH:$PWD/abaco-cli/
 $ auth-tokens-create -S
