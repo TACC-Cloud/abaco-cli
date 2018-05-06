@@ -26,38 +26,38 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 case "$1" in
   list|ls|actors|images)	shift;
-	$DIR/abaco-list.sh "$@";;
+    	bash $DIR/abaco-list.sh "$@";;
 
   create|make|register)       	shift;
-	$DIR/abaco-create.sh "$@";;
+    	bash $DIR/abaco-create.sh "$@";;
 
   delete|remove|rm)    		shift;
-	$DIR/abaco-delete.sh "$@";;
+    	bash $DIR/abaco-delete.sh "$@";;
 
   update|change)                shift;
-        $DIR/abaco-update.sh "$@";;
+      bash $DIR/abaco-update.sh "$@";;
 
   permissions|share)            shift;
-        $DIR/abaco-permissions.sh "$@";;
+      bash $DIR/abaco-permissions.sh "$@";;
 
   workers|worker)		shift;
-	$DIR/abaco-workers.sh "$@";;
+    	bash $DIR/abaco-workers.sh "$@";;
 
   submit|run)			shift;
-	$DIR/abaco-submit.sh "$@";;
+    	bash $DIR/abaco-submit.sh "$@";;
 
   executions)                   shift;
-        $DIR/abaco-executions.sh "$@";;
+      bash $DIR/abaco-executions.sh "$@";;
 
   logs)                         shift;
-        $DIR/abaco-logs.sh "$@";;
+      bash $DIR/abaco-logs.sh "$@";;
 
   deploy)                         shift;
-        $DIR/abaco-deploy.sh "$@";;
+      bash $DIR/abaco-deploy.sh "$@";;
 
   init)                         shift;
-        $DIR/abaco-init.sh "$@";;
+      bash $DIR/abaco-init.sh "$@";;
 
   *) 				shift;
-	echo "$HELP"; exit 0;;
+	   echo "$HELP"; exit 0;;
 esac
