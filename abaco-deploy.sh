@@ -174,7 +174,7 @@ fi
 DOCKER_AUTHS="$(jq -r .auths $HOME/.docker/config.json)"
 if [[ "${DOCKER_AUTHS}" == "{}" ]]
 then
-  die "You don't appear to be logged into a Docker Registry. Please run docker login to fix this."
+  warn "You don't appear to be logged into a Docker Registry. If the next steps fail, please run 'docker login' and then redeploy."
 fi
 
 # Allow default set in ENV
