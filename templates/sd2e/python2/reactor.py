@@ -1,4 +1,4 @@
-from reactors import Reactor
+from reactors.runtime import Reactor
 
 
 def main():
