@@ -14,6 +14,7 @@ Commands:
   delete, remove, rm            remove actor
   update, change                update base Docker image
   permissions, share            list and update actor permissions
+  nonces, keys                  list and update actor nonces
   workers, worker               view and add workers
   submit, run                   run actor
   executions                    view actor executions
@@ -39,6 +40,9 @@ case "$1" in
 
   permissions|share)            shift;
       bash $DIR/abaco-permissions.sh "$@";;
+
+  nonces|keys)            shift;
+      bash $DIR/abaco-nonces.sh "$@";;
 
   workers|worker)		shift;
     	bash $DIR/abaco-workers.sh "$@";;
