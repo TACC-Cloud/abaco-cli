@@ -21,7 +21,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$DIR/abaco-common.sh"
 
 function slugify {
-  echo "${1}" | tr -c -d [0-9A-Za-z\ _-] | tr ' ' '_' | tr '[:upper:]' '[:lower:]'
+  $DIR/slugify.py "${1}"
 }
 
 name=
