@@ -18,6 +18,7 @@ Options:
   -E    read environment variables from json file 
   -p    add privileged status
   -f    force update
+  -s    make stateless actor
   -u    use actor uid
   -v    verbose output
   -V    very verbose output
@@ -30,11 +31,13 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source "$DIR/abaco-common.sh"
 
+privileged="false"
+stateless="false"
+force="false"
+use_uid="false"
 tok=
-force=false
-use_uid=false
-privileged=false
-while getopts ":he:E:pfuvz:V" o; do
+
+while getopts ":he:E:pfsuvz:V" o; do
     case "${o}" in
         z) # custom token
             tok=${OPTARG}
@@ -50,6 +53,9 @@ while getopts ":he:E:pfuvz:V" o; do
             ;;
         f) # force
             force=true
+            ;;
+        s) # stateless
+            stateless="true"
             ;;
         u) # use uid
             use_uid=true
@@ -99,7 +105,7 @@ args_default_env=$(build_json_from_array "${env_args[@]}")
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
+data="{\"stateless\":\"${stateless}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
 curlCommand="curl -X PUT -sk -H \"Authorization: Bearer $TOKEN\"  -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actorid}'"
 
 function filter() {
