@@ -13,7 +13,7 @@ is required and can be string or JSON.
 Options:
   -h	show help message
   -z    api access token
-  -m	value of actor env variable $MSG
+  -m	value of actor env variable \$MSG
   -q	query string to pass to actor env
   -v	verbose output
   -V    very verbose output

@@ -63,7 +63,7 @@ else
 fi
 
 function filter_list() {
-    eval $@ | jq -r '.result | .ids | .[]' | column -t
+	eval $@ | jq -r '.result | .executions | .[] | [.id, .status] | "\(.[0]) \(.[1])"' | column -t
 }
 
 function filter_description() {
