@@ -7,7 +7,7 @@ THIS=${THIS//[-]/ }
 HELP="
 Usage: ${THIS} [OPTION]... [ACTORID]
 
-Executes the actor with provided ID and returns execution ID. Message (-m) 
+Executes the actor with provided ID and returns execution ID. Message (-m)
 is required and can be string or JSON.
 
 Options:
@@ -15,45 +15,51 @@ Options:
   -z    api access token
   -m	value of actor env variable \$MSG
   -q	query string to pass to actor env
+  -x    send as a synchronous execution
   -v	verbose output
   -V    very verbose output
 "
 
 # function usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
-function usage() { echo "$HELP"; exit 0; }
+function usage() {
+    echo "$HELP"
+    exit 0
+}
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$DIR/abaco-common.sh"
 tok=
 
-while getopts ":hm:q:vz:V" o; do
+while getopts ":hm:q:vxz:V" o; do
     case "${o}" in
-        z) # custom token
-            tok=${OPTARG}
-            ;;        
-        m) # msg to pass to actor environment as $MSG
-            msg=${OPTARG}
-            ;;
-        q) # query string to pass to actor environment
-            query=${OPTARG}
-            ;;
-        v) # verbose
-            verbose="true"
-            ;;
-        V) # verbose
-            very_verbose="true"
-            ;;
-        h | *) # print help text
-            usage
-            ;;
+    z) # custom token
+        tok=${OPTARG}
+        ;;
+    m) # msg to pass to actor environment as $MSG
+        msg=${OPTARG}
+        ;;
+    q) # query string to pass to actor environment
+        query=${OPTARG}
+        ;;
+    x) # synchronous execution
+        synchronous="true"
+        ;;
+    v) # verbose
+        verbose="true"
+        ;;
+    V) # verbose
+        very_verbose="true"
+        ;;
+    h | *) # print help text
+        usage
+        ;;
     esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
-if [[ "$very_verbose" == "true" ]];
-then
+if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
@@ -68,12 +74,20 @@ if [ -z "$msg" ]; then
     usage
 fi
 
+syncargs=
+if [[ "$synchronous" == "true" ]]; then
+    syncargs="_abaco_synchronous=true"
+    if [[ ! -z "${query}" ]]; then
+        syncargs="&${syncargs}"
+    fi
+fi
+
 # check if $msg is JSON; if so, add JSON header
 if $(is_json "$msg"); then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\"  -X POST -H \"Content-Type: application/json\" -d '$msg' '$BASE_URL/actors/v2/${actor}/messages?${query}'"
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\"  -X POST -H \"Content-Type: application/json\" -d '$msg' '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}'"
 else
     msg="$(single_quote "$msg")"
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" -X POST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}'"
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" -X POST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}'"
 fi
 
 function filter() {
@@ -82,8 +96,7 @@ function filter() {
     echo $output | jq -r '.msg'
 }
 
-if [[ "$very_verbose" == "true" ]];
-then
+if [[ "$very_verbose" == "true" ]]; then
     echo "Calling $curlCommand"
 fi
 
