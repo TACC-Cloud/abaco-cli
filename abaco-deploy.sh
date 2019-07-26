@@ -353,7 +353,8 @@ if ((verbose)); then
 fi
 
 # Prepend directory to allow for multiple concurrent CLI to coexist
-ACTOR_ID=$(eval ${DIR}/$cmd | jq -r .result.id)
+RESP=$(eval ${DIR}/${cmd})
+ACTOR_ID=$(echo ${RESP} | jq -r .result.id)
 
 if [[ "$ACTOR_ID" == "null" ]]; then
   die "Failed to deploy actor $REACTOR_NAME"
