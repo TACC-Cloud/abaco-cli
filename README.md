@@ -1,5 +1,7 @@
 # Abaco CLI
 
+[![DOI](https://zenodo.org/badge/116715118.svg)](https://zenodo.org/badge/latestdoi/116715118)
+
 Command line interface for working with the Abaco (Actor Based Containers) API
 
 Dependent upon [jq](https://stedolan.github.io/jq/), getopts, and the [Tapis CLI](https://github.com/TACC-Cloud/agave-cli)
