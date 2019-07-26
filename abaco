@@ -18,6 +18,7 @@ Commands:
   workers, worker               view and add workers
   submit, run                   run actor
   executions                    view actor executions
+  messages, mailbox             count (or purge) an actor's messages
   logs				view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
@@ -90,6 +91,11 @@ init)
 version)
     shift
     bash $DIR/abaco-version.sh "$@"
+    ;;
+
+messages | mailbox)
+    shift
+    bash $DIR/abaco-messages.sh "$@"
     ;;
 
 *)

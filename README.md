@@ -16,11 +16,11 @@ $ auth-tokens-create -S
 
 ## Usage
 
-There are twelve subcommands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
+There are **13** subcommands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
 ```
 $ abaco
-create    deploy       init    logs           submit    workers
-delete    executions   list    permissions    update    version
+create       deploy       init         logs         permissions       workers       version
+delete       executions   list         messages     submit            update
 ```
 
 Each command has a help message, which can be viewed with the `-h` flag. The `abaco` command also has a help message that overviews the function of each command, as shown below.
@@ -41,6 +41,7 @@ Commands:
   workers, worker             view and add workers
   submit, run                 run actor
   executions                  view actor executions
+  messages, mailbox           count (or purge) an actor's messages
   logs                        view execution logs
   init                        create a new actor project
   deploy                      build and deploy an actor
