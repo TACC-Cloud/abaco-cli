@@ -25,6 +25,8 @@ Options:
 -V    very verbose output
 "
 
+#displayonly
+
 # function usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
 function usage() {
     echo "$HELP"

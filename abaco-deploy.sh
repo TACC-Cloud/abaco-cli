@@ -23,6 +23,7 @@ Options:
   -S    override REACTOR_STATEFUL to deploy the actor as stateful
   -p    don't pull source image when building
   -k    bypass Docker cache when building
+  -K    skip pushing to the container registry
   -R    dry run - only build image
   -U    update preexisting actor (provided or from .ACTOR_ID)
   -D    display only (do not cache actor ID on the host)
@@ -42,6 +43,9 @@ function get_actorid() {
   if [[ $actorid == -* ]] || [ -z "$actorid" ]; then
     if [ -s ".ACTOR_ID" ]; then
       actorid=$(cat .ACTOR_ID)
+      if [[ "$actorid" == "null" ]]; then
+        actorid=
+      fi
     else
       actorid=
     fi
@@ -60,15 +64,17 @@ passed_image_tag=
 tok=
 no_cache=
 dry_run=
+no_push=0
 dopull=1
 nocache=0
 displayonly=0
 stateful=0
 varstateful=
 optstateful=
+verbose=0
 
 current_actor=
-while getopts ":hz:F:B:RpkUksSDO:c:t:" o; do
+while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
   case "${o}" in
   z) # API token
     tok=${OPTARG}
@@ -93,6 +99,9 @@ while getopts ":hz:F:B:RpkUksSDO:c:t:" o; do
     ;;
   k) # --no-cache
     no_cache=" --no-cache"
+    ;;
+  K) # don't push
+    no_push=1
     ;;
   R) # dry run
     dry_run=1
@@ -119,6 +128,9 @@ while getopts ":hz:F:B:RpkUksSDO:c:t:" o; do
     else
       info "Updating actor $current_actor"
     fi
+    ;;
+  v) # verbose
+    verbose=1
     ;;
   h | *) # print help text
     usage
@@ -224,29 +236,25 @@ fi
 # Reactor values
 if [ -z "${REACTOR_NAME}" ]; then
   warn "REACTOR_NAME is empty so we're naming it for you. Don't you love your Reactor?"
-  source "$DIR/libs/petname.sh"
+  source "${DIR}/libs/petname.sh"
   export REACTOR_NAME=$(petname 3)
   echo "${REACTOR_NAME}"
 fi
 
 # Read STATEFUL from config
-if [ "$REACTOR_STATEFUL" == "1" ];
-then
+if [ "${REACTOR_STATEFUL}" == "1" ]; then
   stateful=1
 else
   stateful=0
 fi
 
 # Override STATEFUL=1 set in config.rc when the -s option is actively passed
-if ((stateful)) && [[ ! -z "$optstateful" ]] && ! ((optstateful));
-then
+if ((stateful)) && [[ ! -z "$optstateful" ]] && ! ((optstateful)); then
   stateful=0
 # Override STATEFUL= or STATEFUL=0 when -S option is passed
-elif ! ((stateful)) && [[ ! -z "$optstateful" ]] && ((optstateful));
-then
+elif ! ((stateful)) && [[ ! -z "$optstateful" ]] && ((optstateful)); then
   stateful=1
 fi
-
 
 # Docker stuff
 DOCKER_BUILD_TARGET="${DOCKER_HUB_ORG}/${DOCKER_IMAGE_TAG}"
@@ -277,6 +285,11 @@ if ((nocache)); then
 fi
 info "  Build Options: ${buildopts}"
 
+if ((verbose)); then
+  build_cmd="docker -l warn build ${buildopts} -f ${dockerfile} -t ${DOCKER_BUILD_TARGET}"
+  info "${build_cmd}"
+fi
+
 docker -l warn build ${buildopts} -f "${dockerfile}" -t "${DOCKER_BUILD_TARGET}" . || { die "Error building ${DOCKER_BUILD_TARGET}"; }
 
 if [ "$dry_run" == 1 ]; then
@@ -284,14 +297,18 @@ if [ "$dry_run" == 1 ]; then
   exit 0
 fi
 
-# Try Docker push
-docker push "${DOCKER_BUILD_TARGET}" || { die "Error pushing ${DOCKER_BUILD_TARGET} image to Docker registry"; }
+# Push to container registry
+if ! ((no_push)); then
+  info "Pushing ${DOCKER_BUILD_TARGET} to container registry."
+  docker push "${DOCKER_BUILD_TARGET}" || { die "Error pushing image to container registry"; }
+  info "Finalizing the push action..."
+  sleep 2
+  info "Done"
+else
+  info "Skipped pushing to container registry."
+fi
 
-info "Pausing to let Docker Hub register that the repo has been pushed"
-sleep 2
-
-# Now, build abaco create/update CLI and call it
-# Don't reinvent the wheel by re-writing 'abaco create'
+# Build abaco create/update CLI, then call it
 ABACO_CREATE_OPTS="-f"
 if [ "${REACTOR_PRIVILEGED}" == 1 ]; then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -p"
@@ -303,10 +320,10 @@ fi
 # If updating, do not include name or stateless
 if [ -z "$current_actor" ]; then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -n ${REACTOR_NAME}"
-  if ((stateless); then
-    ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -s"
-  else
+  if ((stateful)); then
     ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -S"
+  else
+    ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -s"
   fi
 fi
 
@@ -326,15 +343,25 @@ if [ -z "$current_actor" ]; then
 else
   cmd="abaco update -v ${ABACO_CREATE_OPTS} ${current_actor} ${DOCKER_BUILD_TARGET}"
 fi
-eval $cmd | jq -r .result.id >.ACTOR_ID
 
-ACTOR_ID=$(cat .ACTOR_ID)
-
-if [ ! -z "$ACTOR_ID" ]; then
-  echo "Successfully deployed actor with ID: $ACTOR_ID"
-else
-  die "There was an error deploying $REACTOR_NAME"
+if ((verbose)); then
+  info "${cmd}"
 fi
 
+# Prepend directory to allow for multiple concurrent CLI to coexist
+ACTOR_ID=$(eval ${DIR}/$cmd | jq -r .result.id)
+
+if [[ "$ACTOR_ID" == "null" ]]; then
+  die "Failed to deploy actor $REACTOR_NAME"
+fi
+
+# Write cache
+if ! ((displayonly)); then
+  echo -n "${ACTOR_ID}" >.ACTOR_ID
+fi
+
+echo "Successfully deployed actor with ID: $ACTOR_ID"
+
+exit 0
+
 # TODO: Add/update the alias registry if provided
-# This uses REACTOR_ALIAS and the optional message.jsonschema
