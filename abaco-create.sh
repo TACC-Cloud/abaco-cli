@@ -7,21 +7,22 @@ THIS=${THIS//[-]/ }
 HELP="
 Usage: ${THIS} [OPTION]... [IMAGE]
 
-Creates an abaco actor from the provided image and returns the name and ID
-of the actor.
+Creates an Abaco actor from the provided Docker image, returning the name
+and ID of the actor.
 
 Options:
-  -h	show help message
-  -z    api access token
-  -n    name of actor
-  -e    set environment variables (key=value)
-  -E    read environment variables from json file 
-  -p    make privileged actor
-  -f    force actor update
-  -s    make stateless actor
-  -u    use actor uid
-  -v    verbose output
-  -V    very verbose output
+-h    show help message
+-z    api access token
+-n    name of actor
+-e    set environment variables (key=value)
+-E    read environment variables from json file
+-p    make privileged actor
+-f    force actor update
+-s    create a stateless actor (default)
+-S    force actor to be stateful
+-u    use actor uid
+-v    verbose output
+-V    very verbose output
 "
 
 # function usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
@@ -39,7 +40,7 @@ tok=
 env_json=
 declare -a env_args
 
-while getopts ":hn:e:E:pfsuvz:V" o; do
+while getopts ":hn:e:E:pfsSuvz:V" o; do
     case "${o}" in
         z) # custom token
             tok=${OPTARG}
@@ -62,6 +63,9 @@ while getopts ":hn:e:E:pfsuvz:V" o; do
         s) # stateless
             stateless="true"
             ;;
+        S) # stateful!
+            stateless="false"
+            ;;
         u) # use uid
             use_uid="true"
             ;;
@@ -83,7 +87,7 @@ if [[ "$very_verbose" == "true" ]];
 then
     verbose="true"
 fi
-    
+
 image="$1"
 if [ -z "$image" ]; then
     echo "Please specify a Docker image to use for the actor"
@@ -107,7 +111,7 @@ if [ ! -z "$env_json" ]
 fi
 # build command line env vars into json
 args_default_env=$(build_json_from_array "${env_args[@]}")
-#combine both 
+#combine both
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
