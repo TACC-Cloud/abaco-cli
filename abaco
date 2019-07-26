@@ -21,47 +21,80 @@ Commands:
   logs				view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
+  version                       report the Abaco CLI version
 "
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$1" in
-  list|ls|actors|images)	shift;
-    	bash $DIR/abaco-list.sh "$@";;
+list | ls | actors | images)
+    shift
+    bash $DIR/abaco-list.sh "$@"
+    ;;
 
-  create|make|register)       	shift;
-    	bash $DIR/abaco-create.sh "$@";;
+create | make | register)
+    shift
+    bash $DIR/abaco-create.sh "$@"
+    ;;
 
-  delete|remove|rm)    		shift;
-    	bash $DIR/abaco-delete.sh "$@";;
+delete | remove | rm)
+    shift
+    bash $DIR/abaco-delete.sh "$@"
+    ;;
 
-  update|change)                shift;
-      bash $DIR/abaco-update.sh "$@";;
+update | change)
+    shift
+    bash $DIR/abaco-update.sh "$@"
+    ;;
 
-  permissions|share)            shift;
-      bash $DIR/abaco-permissions.sh "$@";;
+permissions | share)
+    shift
+    bash $DIR/abaco-permissions.sh "$@"
+    ;;
 
-  nonces|keys)            shift;
-      bash $DIR/abaco-nonces.sh "$@";;
+nonces | keys)
+    shift
+    bash $DIR/abaco-nonces.sh "$@"
+    ;;
 
-  workers|worker)		shift;
-    	bash $DIR/abaco-workers.sh "$@";;
+workers | worker)
+    shift
+    bash $DIR/abaco-workers.sh "$@"
+    ;;
 
-  submit|run)			shift;
-    	bash $DIR/abaco-submit.sh "$@";;
+submit | run)
+    shift
+    bash $DIR/abaco-submit.sh "$@"
+    ;;
 
-  executions)                   shift;
-      bash $DIR/abaco-executions.sh "$@";;
+executions)
+    shift
+    bash $DIR/abaco-executions.sh "$@"
+    ;;
 
-  logs)                         shift;
-      bash $DIR/abaco-logs.sh "$@";;
+logs)
+    shift
+    bash $DIR/abaco-logs.sh "$@"
+    ;;
 
-  deploy)                         shift;
-      bash $DIR/abaco-deploy.sh "$@";;
+deploy)
+    shift
+    bash $DIR/abaco-deploy.sh "$@"
+    ;;
 
-  init)                         shift;
-      bash $DIR/abaco-init.sh "$@";;
+init)
+    shift
+    bash $DIR/abaco-init.sh "$@"
+    ;;
 
-  *) 				shift;
-	   echo "$HELP"; exit 0;;
+version)
+    shift
+    bash $DIR/abaco-version.sh "$@"
+    ;;
+
+*)
+    shift
+    echo "$HELP"
+    exit 0
+    ;;
 esac
