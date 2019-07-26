@@ -62,9 +62,9 @@ passed_docker_org="${DOCKER_HUB_ORG}"
 passed_image_name=
 passed_image_tag=
 tok=
-no_cache=
 dry_run=
 no_push=0
+no_build=${no_push}
 dopull=1
 nocache=0
 displayonly=0
@@ -97,10 +97,7 @@ while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
   z) # API token
     tok=${OPTARG}
     ;;
-  k) # --no-cache
-    no_cache=" --no-cache"
-    ;;
-  K) # don't push
+  K) # don't push to registry
     no_push=1
     ;;
   R) # dry run
@@ -109,7 +106,7 @@ while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
   p) # no pull
     dopull=0
     ;;
-  k) # no pull
+  k) # no use Docker cache
     nocache=1
     ;;
   s) # stateless
@@ -138,6 +135,11 @@ while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
   esac
 done
 shift $((OPTIND - 1))
+
+# No point building container again if we are not pushing it
+if ((no_push)); then
+  no_build=1
+fi
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
 if [[ "$very_verbose" == "true" ]]; then
@@ -290,7 +292,9 @@ if ((verbose)); then
   info "${build_cmd}"
 fi
 
-docker -l warn build ${buildopts} -f "${dockerfile}" -t "${DOCKER_BUILD_TARGET}" . || { die "Error building ${DOCKER_BUILD_TARGET}"; }
+if !((no_build)); then
+  docker -l warn build ${buildopts} -f "${dockerfile}" -t "${DOCKER_BUILD_TARGET}" . || { die "Error building ${DOCKER_BUILD_TARGET}"; }
+fi
 
 if [ "$dry_run" == 1 ]; then
   info "Stopping deployment as this was only a dry run!"
