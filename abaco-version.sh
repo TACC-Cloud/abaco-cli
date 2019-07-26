@@ -7,7 +7,7 @@ THIS=${THIS//[-]/ }
 HELP="
 Usage: ${THIS} [OPTION]... [IMAGE]
 
-Reports the Abaco CLI version.
+Reports the Abaco CLI and service versions.
 
 Options:
 -h    show help message

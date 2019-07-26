@@ -21,7 +21,7 @@ Commands:
   logs				view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
-  version                       report the Abaco CLI version
+  version                       report CLI and service versions
 "
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
