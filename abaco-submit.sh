@@ -12,7 +12,8 @@ is required and can be string or JSON.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
+  -Z    authorization nonce
   -m	value of actor env variable \$MSG
   -q	query string to pass to actor env
   -x    send as a synchronous execution
@@ -30,11 +31,15 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$DIR/abaco-common.sh"
 tok=
+xnonce=
 
-while getopts ":hm:q:vxz:V" o; do
+while getopts ":hm:q:vxz:Z:V" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
+        ;;
+    Z) # abaco nonce
+        xnonce=${OPTARG}
         ;;
     m) # msg to pass to actor environment as $MSG
         msg=${OPTARG}
@@ -82,12 +87,23 @@ if [[ "$synchronous" == "true" ]]; then
     fi
 fi
 
+# Do not send Bearer token - Instead, send the x-nonce parameter
+auth_header="-H \"Authorization: Bearer $TOKEN\""
+nonceargs=
+if [[ ! -z "${xnonce}" ]]; then
+    auth_header=
+    nonceargs="x-nonce=${xnonce}"
+    if [[ ! -z "${query}" ]]; then
+        nonceargs="&${nonceargs}"
+    fi
+fi
+
 # check if $msg is JSON; if so, add JSON header
 if $(is_json "$msg"); then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\"  -X POST -H \"Content-Type: application/json\" -d '$msg' '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}'"
+    curlCommand="curl -sk ${auth_header} -XPOST -H \"Content-Type: application/json\" -d '$msg' '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
 else
     msg="$(single_quote "$msg")"
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" -X POST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}'"
+    curlCommand="curl -sk ${auth_header} -XPOST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
 fi
 
 function filter() {
