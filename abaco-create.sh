@@ -12,7 +12,7 @@ and ID of the actor.
 
 Options:
 -h    show help message
--z    api access token
+-z    oauth access token
 -n    name of actor
 -e    set environment variables (key=value)
 -E    read environment variables from json file

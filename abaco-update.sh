@@ -13,7 +13,7 @@ required.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -e    set environment variables (key=value)
   -E    read environment variables from json file
   -p    add privileged status

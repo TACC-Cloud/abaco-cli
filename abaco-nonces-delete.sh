@@ -11,7 +11,7 @@ Deletes a nonce for a actor.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -v	verbose output
   -V    very verbose output
 "

@@ -13,7 +13,7 @@ Docker registry, and a properly-configured source directory.
 
 Options:
   -h    show help message
-  -z    api access token
+  -z    oauth access token
   -F    Docker file (Dockerfile)
   -B    build config file (reactor.rc)
   -O    override DOCKER_HUB_ORG and ENV

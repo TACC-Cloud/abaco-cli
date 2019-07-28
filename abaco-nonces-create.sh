@@ -12,7 +12,7 @@ Creates a nonce for an actor. Default maximum uses is -1
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -d    short nonce description
   -m    maximum uses
   -l    access level

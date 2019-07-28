@@ -12,7 +12,7 @@ if a nonce id is also provided.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -v	verbose output
   -V    very verbose output
 "

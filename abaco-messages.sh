@@ -12,7 +12,7 @@ Count (or purge) messages in an actor's mailbox
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -X    purge all messages
   -v	verbose output
   -V    very verbose output

@@ -11,7 +11,7 @@ Create an alias for an actor.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -p    skip pre-flight check of actor and alias
   -v	verbose output
   -V    very verbose output
