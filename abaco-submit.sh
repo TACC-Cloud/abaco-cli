@@ -93,7 +93,7 @@ nonceargs=
 if [[ ! -z "${xnonce}" ]]; then
     auth_header=
     nonceargs="x-nonce=${xnonce}"
-    if [[ ! -z "${query}" ]]; then
+    if [[ ! -z "${query}" ]] || [[ ! -z "${syncargs}" ]]; then
         nonceargs="&${nonceargs}"
     fi
 fi
