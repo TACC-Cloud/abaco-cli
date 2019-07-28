@@ -14,7 +14,6 @@ Commands:
   delete, remove, rm            remove actor
   update, change                update base Docker image
   permissions, share            list and update actor permissions
-  nonces, keys                  list and update actor nonces
   workers, worker               view and add workers
   submit, run                   run actor
   executions                    view actor executions
@@ -23,6 +22,9 @@ Commands:
   init                          create a new actor project
   deploy                        build and deploy an actor
   version                       report CLI and service versions
+
+Subcommands:
+  aliases                       manage aliases for actors
 "
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -51,11 +53,6 @@ update | change)
 permissions | share)
     shift
     bash $DIR/abaco-permissions.sh "$@"
-    ;;
-
-nonces | keys)
-    shift
-    bash $DIR/abaco-nonces.sh "$@"
     ;;
 
 workers | worker)
@@ -96,6 +93,11 @@ version)
 messages | mailbox)
     shift
     bash $DIR/abaco-messages.sh "$@"
+    ;;
+
+aliases | alias)
+    shift
+    bash $DIR/abaco-aliases.sh "$@"
     ;;
 
 *)
