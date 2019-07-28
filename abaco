@@ -25,6 +25,7 @@ Commands:
 
 Subcommands:
   aliases                       manage aliases for actors
+  nonces                        manage nonces for actors
 "
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -98,6 +99,11 @@ messages | mailbox)
 aliases | alias)
     shift
     bash $DIR/abaco-aliases.sh "$@"
+    ;;
+
+nonces | nonce)
+    shift
+    bash $DIR/abaco-nonces.sh "$@"
     ;;
 
 *)

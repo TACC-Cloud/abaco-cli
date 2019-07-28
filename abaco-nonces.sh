@@ -1,61 +1,42 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 THIS=$(basename $0)
 THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID] (NONCE_ID)
+Usage: ${THIS} [COMMAND] [OPTION]...
 
-Create, list, and delete nonces for a given actor. A nonce has
-a level of READ, EXECUTE, or UPDATE and a specific number of uses.
+Create and manage Abaco actor nonces (per-actor tokens). Options vary by
+command; use -h flag after command to view usage details.
 
-Options:
-  -h    show help message
-  -z    api access token
-  -l    update this user's permission
-  -p    permission level
-  -v    verbose output
-  -V    very verbose output
+Commands:
+  list, ls                      list nonces
+  create                        create a nonce
+  delete, remove, rm            delete a nonce
 "
 
-# function usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
-function usage() { echo "$HELP"; exit 0; }
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+case "$1" in
+list | ls)
+    shift
+    bash $DIR/abaco-nonces-list.sh "$@"
+    ;;
 
-source "$DIR/abaco-common.sh"
-tok=
+create | make)
+    shift
+    bash $DIR/abaco-nonces-create.sh "$@"
+    ;;
 
-while getopts ":hvu:p:z:V" o; do
-    case "${o}" in
-        z) # custom token
-            tok=${OPTARG}
-            ;;
-        u) # user to update permissions
-            user=${OPTARG}
-            ;;
-        p) # permission level
-            permission=${OPTARG}
-            ;;
-        v) # verbose
-            verbose="true"
-            ;;
-        V) # verbose
-            very_verbose="true"
-            ;;
-        h | *) # print help text
-            usage
-            ;;
-    esac
-done
-shift $((OPTIND-1))
+delete | remove | rm)
+    shift
+    bash $DIR/abaco-nonces-delete.sh "$@"
+    ;;
 
-if [ ! -z "$tok" ]; then TOKEN=$tok; fi
-if [[ "$very_verbose" == "true" ]];
-then
-    verbose="true"
-fi
-
-echo "Support for nonces is not yet implemented"
-exit 0
+*)
+    shift
+    echo "$HELP"
+    exit 0
+    ;;
+esac
