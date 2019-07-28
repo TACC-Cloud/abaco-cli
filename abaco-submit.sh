@@ -82,6 +82,7 @@ fi
 syncargs=
 if [[ "$synchronous" == "true" ]]; then
     syncargs="_abaco_synchronous=true"
+    verbose="true"
     if [[ ! -z "${query}" ]]; then
         syncargs="&${syncargs}"
     fi
