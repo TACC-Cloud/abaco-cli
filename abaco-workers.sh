@@ -5,7 +5,7 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID]
+Usage: ${THIS} [OPTION]... [ACTORID | ALIAS]
 
 Returns list of worker IDs and statuses or JSON description of worker
 if worker ID provided with -w flag. Use -n flag to change worker count.

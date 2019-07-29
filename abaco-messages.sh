@@ -6,7 +6,7 @@ THIS=${THIS//[-]/ }
 
 HELP="
 Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID]
+       ${THIS} [OPTION]... [ACTORID | ALIAS]
 
 Count (or purge) messages in an actor's mailbox
 

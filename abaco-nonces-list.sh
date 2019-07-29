@@ -5,7 +5,7 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID [NONCE]
+Usage: ${THIS} [OPTION]... [ACTORID] [NONCE]
 
 Returns a list of nonces for an actor or a single record
 if a nonce id is also provided.

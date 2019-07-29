@@ -5,10 +5,10 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID] [IMAGE]
+Usage: ${THIS} [OPTION]... [ACTORID | ALIAS] [IMAGE]
 
 Updates an actor. State status and actor name
-cannot be changed. Actor ID and Docker image
+cannot be changed. Actor ID/alias and Docker image
 required.
 
 Options:

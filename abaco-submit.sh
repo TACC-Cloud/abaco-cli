@@ -5,10 +5,11 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID]
+Usage: ${THIS} [OPTION]... [ACTORID | ALIAS]
 
-Executes the actor with provided ID and returns execution ID. Message (-m)
-is required and can be string or JSON.
+Executes the actor with provided ID or alias and returns either an
+execution ID or the actual response (if run in synchronous mode). The
+message (-m) is required and can be a plaintext string or JSON.
 
 Options:
   -h	show help message

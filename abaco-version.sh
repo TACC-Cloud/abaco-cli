@@ -5,7 +5,7 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [IMAGE]
+Usage: ${THIS} [OPTION]...
 
 Reports the Abaco CLI and service versions.
 

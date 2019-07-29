@@ -6,10 +6,10 @@ THIS=${THIS//[-]/ }
 
 HELP="
 Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID]
+       ${THIS} [OPTION]... [ACTORID | ALIAS]
 
-Returns list of actor names, IDs, and statuses or JSON description of
-actor if ID provided
+Returns list of actor names, IDs, and statuses (or the JSON description of
+an actor if an ID or alias is provided)
 
 Options:
   -h	show help message

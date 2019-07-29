@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://schemas.abaco.tacc.cloud/schemas/sleep_loop.json",
+    "title": "Sleep Loop Message",
+    "description": "Have an actor sleep for a defined number of cycles.",
+    "type": "object",
+    "properties": {
+        "iterations": {
+            "type": "integer",
+            "description": "Number of iterations",
+            "minimum": 0,
+            "value": 6
+        },
+        "sleep": {
+            "type": "number",
+            "description": "Seconds to sleep in each iteration",
+            "minimum": 0.01,
+            "value": 10.0
+        },
+    },
+    "required": ["iterations", "sleep"]
+}

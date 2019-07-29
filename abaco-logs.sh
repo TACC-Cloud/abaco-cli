@@ -5,7 +5,7 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID] [EXECUTIONID]
+Usage: ${THIS} [OPTION]... [ACTORID | ALIAS] [EXECUTIONID]
 
 Prints logs for actor and exection IDs provided, respectively.
 
