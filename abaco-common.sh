@@ -21,6 +21,21 @@ if [[ "${ABACO_ENABLE_AUTO_REFRESH}" == "1" ]]; then
 fi
 export tapis_cli_avail
 
+git_cli_avail=0
+ABACO_USE_GIT_CLI=1
+if [[ "${ABACO_USE_GIT_CLI}" == "1" ]]; then
+    if ! ((git_cli_avail)); then
+        if [[ -z "${GIT_CLI_PATH}" ]] || [[ -d "${GIT_CLI_PATH}" ]]; then
+            GIT_CLI_PATH=$(dirname $(which git))
+        fi
+        if [[ -f ${GIT_CLI_PATH}/git ]]; then
+            git_cli_avail=1
+            export git_cli_avail
+        fi
+    fi
+fi
+export git_cli_avail
+
 AGAVE_AUTH_CACHE=
 if [ ! -z "${AGAVE_CACHE_DIR}" ] && [ -d "${AGAVE_CACHE_DIR}" ]; then
     if [ -f "${AGAVE_CACHE_DIR}/current" ]; then
