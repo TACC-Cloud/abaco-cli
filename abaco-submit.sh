@@ -103,8 +103,10 @@ fi
 if $(is_json "$msg"); then
     curlCommand="curl -sk ${auth_header} -XPOST -H \"Content-Type: application/json\" -d '$msg' '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
 else
-    msg="$(single_quote "$msg")"
-    curlCommand="curl -sk ${auth_header} -XPOST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
+    # msg="$(single_quote "$msg")"
+    curlCommand="curl -sk ${auth_header} -XPOST --data-urlencode \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
+    # msg="$(single_quote "$msg")"
+    # curlCommand="curl -sk ${auth_header} -XPOST --data \"message=${msg}\" '$BASE_URL/actors/v2/${actor}/messages?${query}${syncargs}${nonceargs}'"
 fi
 
 function filter() {
