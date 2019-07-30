@@ -4,20 +4,6 @@ THIS=$(basename $0)
 THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
-HELP="
-Usage: ${THIS} [OPTION]... [IMAGE]
-
-Initializes an Abaco actor project in a new directory.
-
-Options:
-  -h    show help message
-  -n    project name (e.g. my-actor-name)
-  -d    project description
-  -l    project type (python3)
-  -O    registry username/organization (${USER})
-  -B    base path (current directory)
-"
-
 function usage() {
   echo "$HELP"
   exit 0
@@ -26,17 +12,34 @@ function usage() {
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/abaco-common.sh"
 
-function slugify() {
-  $DIR/slugify.py "${1}"
-}
+HELP="
+Usage: ${THIS} [OPTION]... [IMAGE]
+
+Initializes an Abaco actor project in a new directory.
+
+The default value for -O can be changed by setting the
+DOCKER_HUB_ORG environment variable (e.g. DOCKER_HUB_ORG=tacc).
+
+Options:
+  -h    show help message
+  -n    project name (e.g. my-actor-name)
+  -d    project description
+  -l    project type (python3)
+  -O    registry username/organization (${REGISTRY_USERNAME})
+  -B    base path (current directory)
+"
 
 name=
 description=
 repo=
 lang=
 tenant=
-uorg=${USER}
+uorg=${REGISTRY_USERNAME}
 basepath="./"
+
+function slugify() {
+  $DIR/slugify.py "${1}"
+}
 
 while getopts ":hl:n:B:d:i:O:" o; do
   case "${o}" in

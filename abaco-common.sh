@@ -127,3 +127,8 @@ CLIENT_KEY=$(jq -r .apikey ${AGAVE_AUTH_CACHE})
 USERNAME=$(jq -r .username ${AGAVE_AUTH_CACHE})
 TOKEN=$(jq -r .access_token ${AGAVE_AUTH_CACHE})
 TENANTID=$(jq -r .tenantid ${AGAVE_AUTH_CACHE})
+if [[ ! -z "${DOCKER_HUB_ORG}" ]]; then
+    REGISTRY_USERNAME=${DOCKER_HUB_ORG}
+else
+    REGISTRY_USERNAME=${USERNAME}
+fi
