@@ -30,11 +30,11 @@ tok=
 preflight=1
 
 function do_preflight() {
-    resp1=$(./abaco ls -v ${1} | jq -r .result)
+    resp1=$(${DIR}/abaco ls -v ${1} | jq -r .result)
     if [[ "$resp1" == "null" ]]; then
         die "Actor ${1} was not found"
     fi
-    resp2=$(./abaco aliases ls ${2} | jq -r .result)
+    resp2=$(${DIR}/abaco aliases ls ${2} | jq -r .result)
     if [[ "$resp2" != "null" ]]; then
         die "Alias ${2} already exists"
     fi
