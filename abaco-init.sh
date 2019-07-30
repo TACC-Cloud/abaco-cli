@@ -7,14 +7,15 @@ THIS=${THIS//[-]/ }
 HELP="
 Usage: ${THIS} [OPTION]... [IMAGE]
 
-Initializes a new Abaco actor project.
+Initializes an Abaco actor project in a new directory.
 
 Options:
   -h    show help message
-  -n    project name (e.g. my_new_actor)
+  -n    project name (e.g. my-actor-name)
   -d    project description
-  -l    project type (default: python3)
-  -B    base path (default is .)
+  -l    project type (python3)
+  -O    registry username/organization (${USER})
+  -B    base path (current directory)
 "
 
 function usage() {
@@ -34,9 +35,10 @@ description=
 repo=
 lang=
 tenant=
+uorg=${USER}
 basepath="./"
 
-while getopts ":hl:n:B:d:i:" o; do
+while getopts ":hl:n:B:d:i:O:" o; do
   case "${o}" in
   n) # name
     name=${OPTARG}
@@ -49,6 +51,9 @@ while getopts ":hl:n:B:d:i:" o; do
     ;;
   B) # basepath
     basepath=${OPTARG}
+    ;;
+  O) # container reg username or org
+    uorg=${OPTARG}
     ;;
   h | *) # print help text
     usage
@@ -98,7 +103,7 @@ fi
 if [ -f "${AGAVE_AUTH_CACHE}" ]; then
   tenant=${TENANTID}
 else
-  die "Can't determine TACC Cloud tenant"
+  die "Can't determine TACC.cloud tenant"
 fi
 
 # Copy in template
@@ -106,7 +111,7 @@ if [ -d "$DIR/templates/$tenant/$lang" ]; then
   if [ ! -f "$DIR/templates/$tenant/$lang/placeholder" ]; then
     cp -R ${DIR}/templates/${tenant}/${lang}/ ${basepath}/${name}/
   else
-    die "Template support for $lang is not yet implemented."
+    die "Template support for ${lang} is not yet implemented."
   fi
 else
   rm -rf ${name}
@@ -117,12 +122,15 @@ fi
 cat <<EOF >"${basepath}/${name}/reactor.rc"
 # Reactor mandatory settings
 REACTOR_NAME=${name}
-REACTOR_DESCRIPTION=${description}
+REACTOR_DESCRIPTION="${description}"
+REACTOR_PRIVILEGED=
+REACTOR_USE_UID=
+REACTOR_STATEFUL=
 
 # Docker settings
-DOCKER_HUB_ORG=your_docker_registory_uname
+DOCKER_HUB_ORG=${uorg}
 DOCKER_IMAGE_TAG=${repo}
-DOCKER_IMAGE_VERSION=0.1
+DOCKER_IMAGE_VERSION=0.0.1
 EOF
 
 if ((git_cli_avail)); then

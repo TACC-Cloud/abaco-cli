@@ -314,10 +314,10 @@ fi
 
 # Build abaco create/update CLI, then call it
 ABACO_CREATE_OPTS="-f"
-if [ "${REACTOR_PRIVILEGED}" == 1 ]; then
+if [ "${REACTOR_PRIVILEGED}" == "1" ]; then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -p"
 fi
-if [ "${REACTOR_USE_UID}" == 1 ]; then
+if [ "${REACTOR_USE_UID}" == "1" ]; then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -u"
 fi
 
