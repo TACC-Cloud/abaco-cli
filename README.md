@@ -18,14 +18,17 @@ $ auth-tokens-create -S
 
 ## Usage
 
-There are **13** subcommands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
+There are **16** subcommands in the CLI. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
 ```
 $ abaco
-create       deploy       init         logs         permissions       workers       version
-delete       executions   list         messages     submit            update
+aliases      deploy       list         nonces       update
+create       executions   logs         permissions  version
+delete       init         messages     submit       workers
 ```
 
-Each command has a help message, which can be viewed with the `-h` flag. The `abaco` command also has a help message that overviews the function of each command, as shown below.
+Each command has a help message, which can be viewed with the `-h` flag.
+The `abaco` command has a help message:
+
 ```
 $ abaco -h
 
@@ -35,20 +38,43 @@ Set of commands for interacting with Abaco API. Options vary by
 command; use -h flag after command to view usage details.
 
 Commands:
-  list, ls, actors, images    list actors
-  create, make, register      create new actor
-  delete, remove, rm          remove actor
-  update, change              update base Docker image
-  permissions, share          list and update actor permissions
-  workers, worker             view and add workers
-  submit, run                 run actor
-  executions                  view actor executions
-  messages, mailbox           count (or purge) an actor's messages
-  logs                        view execution logs
-  init                        create a new actor project
-  deploy                      build and deploy an actor
-  version                     report CLI and service versions
+  list, ls, actors, images    	list actors
+  create, make, register        create new actor
+  delete, remove, rm            remove actor
+  update, change                update base Docker image
+  permissions, share            list and update actor permissions
+  workers, worker               view and add workers
+  submit, run                   run actor
+  executions                    view actor executions
+  messages, mailbox             count (or purge) an actor's messages
+  logs				                  view execution logs
+  init                          create a new actor project
+  deploy                        build and deploy an actor
+  version                       report CLI and service versions
+
+Subcommands:
+  aliases                       manage aliases for actors
+  nonces                        manage nonces for actors
 ```
+
+Each subcommand also has a help option. For example:
+
+```
+$ abaco list -h
+
+Usage: abaco list [OPTION]...
+       abaco list [OPTION]... [ACTORID | ALIAS]
+
+Returns list of actor names, IDs, and statuses (or the JSON description of
+an actor if an ID or alias is provided)
+
+Options:
+  -h	show help message
+  -z    oauth access token
+  -v	verbose output
+  -V    very verbose output
+```
+
 
 ## Tutorial
 

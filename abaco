@@ -26,6 +26,15 @@ Commands:
 Subcommands:
   aliases                       manage aliases for actors
   nonces                        manage nonces for actors
+
+GitHub Issues:
+  https://github.com/TACC-Cloud/abaco-cli/issues
+
+Documentation:
+  Abaco: https://abaco.readthedocs.io/en/latest/
+
+Help:
+  support@tacc.cloud
 "
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
