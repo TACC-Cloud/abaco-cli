@@ -18,7 +18,7 @@ $ auth-tokens-create -S
 
 ## Usage
 
-There are **16** subcommands in the CLI. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
+There are **15** subcommands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
 ```
 $ abaco
 aliases      deploy       list         nonces       update
@@ -26,7 +26,7 @@ create       executions   logs         permissions  version
 delete       init         messages     submit       workers
 ```
 
-Each command has a help message, which can be viewed with the `-h` flag.
+Each subcommand has a help message, which can be viewed with the `-h` flag.
 The `abaco` command has a help message:
 
 ```
@@ -38,7 +38,7 @@ Set of commands for interacting with Abaco API. Options vary by
 command; use -h flag after command to view usage details.
 
 Commands:
-  list, ls, actors, images    	list actors
+  list, ls, actors, images	list actors
   create, make, register        create new actor
   delete, remove, rm            remove actor
   update, change                update base Docker image
@@ -47,7 +47,7 @@ Commands:
   submit, run                   run actor
   executions                    view actor executions
   messages, mailbox             count (or purge) an actor's messages
-  logs				                  view execution logs
+  logs				view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
   version                       report CLI and service versions
@@ -55,6 +55,15 @@ Commands:
 Subcommands:
   aliases                       manage aliases for actors
   nonces                        manage nonces for actors
+
+GitHub Issues:
+  https://github.com/TACC-Cloud/abaco-cli/issues
+
+Documentation:
+  Abaco: https://abaco.readthedocs.io/en/latest/
+
+Help:
+  support@tacc.cloud
 ```
 
 Each subcommand also has a help option. For example:
