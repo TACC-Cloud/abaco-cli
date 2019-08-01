@@ -91,7 +91,7 @@ if [[ ! -z "${filetoupload}" ]]; then
     # msg=$(cat ${filetoupload})
     # msg=$(<${filetoupload})
     # VALIDATES and compacts the JSON document
-    msg=$(jq -c . <tests/create.json)
+    msg=$(jq -c . <${filetoupload})
     if [[ ! "${msg}" ]]; then
         warn "Value of option -F overrode the value passed for -m"
     fi
