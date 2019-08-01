@@ -89,7 +89,9 @@ if [[ ! -z "${filetoupload}" ]]; then
         die "File ${filetoupload} not found"
     fi
     # msg=$(cat ${filetoupload})
-    msg=$(<${filetoupload})
+    # msg=$(<${filetoupload})
+    # VALIDATES and compacts the JSON document
+    msg=$(jq -c . <tests/create.json)
     if [[ ! "${msg}" ]]; then
         warn "Value of option -F overrode the value passed for -m"
     fi
