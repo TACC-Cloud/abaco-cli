@@ -269,6 +269,15 @@ if [ ! -z "${DOCKER_IMAGE_VERSION}" ]; then
   echo "Defaulting to ${DOCKER_IMAGE_TAG}:latest"
 fi
 
+if ((git_cli_avail)); then
+  if [[ "${DOCKER_USE_COMMIT_HASH}" == "1" ]]; then
+    GIT_COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null)
+    if [[ ! -z "{GIT_COMMIT_HASH}" ]]; then
+      DOCKER_IMAGE_VERSION=${GIT_COMMIT_HASH}
+    fi
+  fi
+fi
+
 if [ ! -z "${DOCKER_IMAGE_VERSION}" ]; then
   DOCKER_BUILD_TARGET="${DOCKER_BUILD_TARGET}:${DOCKER_IMAGE_VERSION}"
 else
