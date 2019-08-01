@@ -15,8 +15,9 @@ Options:
   -h	show help message
   -z    oauth access token
   -Z    authorization nonce
-  -m	value of actor env variable \$MSG
-  -q	query string to pass to actor env
+  -F    file containing a JSON message (overrides -m)
+  -m	value for actor environment variable \$MSG
+  -q	query string to pass to actor environment
   -x    send as a synchronous execution
   -v	verbose output
   -V    very verbose output
@@ -33,14 +34,18 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DIR/abaco-common.sh"
 tok=
 xnonce=
+filetoupload=
 
-while getopts ":hm:q:vxz:Z:V" o; do
+while getopts ":hF:m:q:vxz:Z:V" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
         ;;
     Z) # abaco nonce
         xnonce=${OPTARG}
+        ;;
+    F) # JSON file to upload
+        filetoupload=${OPTARG}
         ;;
     m) # msg to pass to actor environment as $MSG
         msg=${OPTARG}
@@ -73,6 +78,21 @@ actor="$1"
 if [ -z "$actor" ]; then
     echo "Please give an actor ID at the end of the command"
     usage
+fi
+
+# Override value for message
+if [[ ! -z "${filetoupload}" ]]; then
+    if [[ -d "${filetoupload}" ]]; then
+        die "Cannot pass a directory to option -F"
+    fi
+    if [[ ! -e "${filetoupload}" ]]; then
+        die "File ${filetoupload} not found"
+    fi
+    # msg=$(cat ${filetoupload})
+    msg=$(<${filetoupload})
+    if [[ ! "${msg}" ]]; then
+        warn "Value of option -F overrode the value passed for -m"
+    fi
 fi
 
 if [ -z "$msg" ]; then
