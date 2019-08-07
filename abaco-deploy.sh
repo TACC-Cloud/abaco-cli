@@ -21,12 +21,13 @@ Options:
   -t    override file REACTOR_IMAGE_VERSION
   -s    override REACTOR_STATEFUL to deploy the actor as stateless
   -S    override REACTOR_STATEFUL to deploy the actor as stateful
+  -A    override REACTOR_TOKENS to deploy actor without Tapis tokens
   -p    don't pull source image when building
   -k    bypass Docker cache when building
   -K    skip pushing to the container registry
-  -R    dry run - only build image
   -U    update preexisting actor (provided or from .ACTOR_ID)
   -D    display only (do not cache actor ID on the host)
+  -R    dry run - build container image and stop
 "
 
 function usage() {
@@ -71,10 +72,12 @@ displayonly=0
 stateful=0
 varstateful=
 optstateful=
+opt_no_token=0
+no_tokens=0
 verbose=0
 
 current_actor=
-while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
+while getopts ":hz:F:B:RpkUkKsvSDAO:c:t:" o; do
   case "${o}" in
   z) # API token
     tok=${OPTARG}
@@ -114,6 +117,9 @@ while getopts ":hz:F:B:RpkUkKsvSDO:c:t:" o; do
     ;;
   S) # stateful
     optstateful=1
+    ;;
+  A) # disable tokens
+    opt_no_token=1
     ;;
   D) # display only
     displayonly=1
@@ -207,6 +213,7 @@ REACTOR_DESCRIPTION=
 REACTOR_STATEFUL=
 REACTOR_PRIVILEGED=
 REACTOR_USE_UID=
+REACTOR_TOKENS=
 
 # Docker image
 DOCKER_HUB_ORG=
@@ -241,6 +248,17 @@ if [ -z "${REACTOR_NAME}" ]; then
   source "${DIR}/libs/petname.sh"
   export REACTOR_NAME=$(petname 3)
   echo "${REACTOR_NAME}"
+fi
+
+# Whether to automatically request API tokens
+if [ "${REACTOR_TOKENS}" == "1" ]; then
+  # Read default from config file
+  # Do not disable in abaco create/update
+  no_tokens=0
+fi
+# If CLI option was passed, disable in abaco create/update
+if ((opt_no_token)); then
+  no_tokens=1
 fi
 
 # Read STATEFUL from config
@@ -328,6 +346,11 @@ if [ "${REACTOR_PRIVILEGED}" == "1" ]; then
 fi
 if [ "${REACTOR_USE_UID}" == "1" ]; then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -u"
+fi
+
+# Pass -A to create if token issuance is to be disabled
+if ((no_tokens)); then
+  ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -A"
 fi
 
 # If updating, do not include name or stateless

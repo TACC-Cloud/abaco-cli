@@ -17,8 +17,9 @@ Options:
   -e    set environment variables (key=value)
   -E    read environment variables from json file
   -p    add privileged status
-  -f    force update
+  -A    disable creation of Tapis tokens
   -u    use actor uid
+  -f    force update
   -v    verbose output
   -V    very verbose output
 "
@@ -37,11 +38,12 @@ privileged="false"
 stateless="true"
 force="false"
 use_uid="false"
+request_token="true"
 tok=
 
 # the s and S opts are here to swallow them when passed - we do not allow
 # toggling between stateless and stateful via an update operation
-while getopts ":he:E:pfsSuvz:V" o; do
+while getopts ":he:E:pfsSAuvz:V" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
@@ -63,6 +65,9 @@ while getopts ":he:E:pfsSuvz:V" o; do
         ;;
     S) # stateful!
         stateless="false"
+        ;;
+    A) # do not request tokens
+        request_token="false"
         ;;
     u) # use uid
         use_uid=true
@@ -113,7 +118,7 @@ stateless=$(${DIR}/abaco ls -v ${actorid} | jq -r .result.stateless)
 
 # curl command
 # \"stateless\":\"${stateless}\",
-data="{\"stateless\":\"${stateless}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
+data="{\"stateless\":\"${stateless}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}}"
 curlCommand="curl -X PUT -sk -H \"Authorization: Bearer $TOKEN\"  -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actorid}'"
 
 function filter() {

@@ -126,6 +126,7 @@ cat <<EOF >"${basepath}/${name}/reactor.rc"
 # Reactor mandatory settings
 REACTOR_NAME=${name}
 REACTOR_DESCRIPTION="${description}"
+REACTOR_TOKENS=1
 REACTOR_PRIVILEGED=
 REACTOR_USE_UID=
 REACTOR_STATEFUL=

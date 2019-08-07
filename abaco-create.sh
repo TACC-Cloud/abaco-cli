@@ -20,6 +20,7 @@ Options:
 -f    force actor update
 -s    create a stateless actor (default)
 -S    create a stateful actor
+-A    disable creation of Tapis tokens
 -u    use actor uid
 -v    verbose output
 -V    very verbose output
@@ -41,11 +42,12 @@ privileged="false"
 stateless="true"
 force="false"
 use_uid="false"
+request_token="true"
 tok=
 env_json=
 declare -a env_args
 
-while getopts ":hn:e:E:pfsSuvz:V" o; do
+while getopts ":hn:e:E:pfsSuvz:AV" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
@@ -70,6 +72,9 @@ while getopts ":hn:e:E:pfsSuvz:V" o; do
         ;;
     S) # stateful!
         stateless="false"
+        ;;
+    A) # do not request tokens
+        request_token="false"
         ;;
     u) # use uid
         use_uid="true"
@@ -118,7 +123,7 @@ args_default_env=$(build_json_from_array "${env_args[@]}")
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
+data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}}"
 curlCommand="curl -X POST -sk -H \"Authorization: Bearer $TOKEN\" -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2'"
 
 function filter() {
