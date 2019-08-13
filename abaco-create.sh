@@ -15,10 +15,11 @@ Options:
   -z    api access token
   -n    name of actor
   -e    set environment variables (key=value)
-  -E    read environment variables from json file 
+  -E    read environment variables from json file
   -p    make privileged actor
   -f    force actor update
   -s    make stateless actor
+  -t    create tokenless actor
   -u    use actor uid
   -v    verbose output
   -V    very verbose output
@@ -33,13 +34,14 @@ source "$DIR/abaco-common.sh"
 
 privileged="false"
 stateless="false"
+tokenized="true"
 force="false"
 use_uid="false"
 tok=
 env_json=
 declare -a env_args
 
-while getopts ":hn:e:E:pfsuvz:V" o; do
+while getopts ":hn:e:E:pfsutvz:V" o; do
     case "${o}" in
         z) # custom token
             tok=${OPTARG}
@@ -62,6 +64,9 @@ while getopts ":hn:e:E:pfsuvz:V" o; do
         s) # stateless
             stateless="true"
             ;;
+        t) # don't get token
+            tokenized="false"
+            ;;
         u) # use uid
             use_uid="true"
             ;;
@@ -83,7 +88,7 @@ if [[ "$very_verbose" == "true" ]];
 then
     verbose="true"
 fi
-    
+
 image="$1"
 if [ -z "$image" ]; then
     echo "Please specify a Docker image to use for the actor"
@@ -107,11 +112,11 @@ if [ ! -z "$env_json" ]
 fi
 # build command line env vars into json
 args_default_env=$(build_json_from_array "${env_args[@]}")
-#combine both 
+#combine both
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
+data="{\"stateless\":\"${stateless}\", \"token\":\"${tokenized}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
 curlCommand="curl -X POST -sk -H \"Authorization: Bearer $TOKEN\" -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2'"
 
 function filter() {
