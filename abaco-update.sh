@@ -7,7 +7,7 @@ THIS=${THIS//[-]/ }
 HELP="
 Usage: ${THIS} [OPTION]... [ACTORID] [IMAGE]
 
-Updates an actor. State status and actor name 
+Updates an actor. State status and actor name
 cannot be changed. Actor ID and Docker image
 required.
 
@@ -15,10 +15,11 @@ Options:
   -h	show help message
   -z    api access token
   -e    set environment variables (key=value)
-  -E    read environment variables from json file 
+  -E    read environment variables from json file
   -p    add privileged status
   -f    force update
   -s    make stateless actor
+  -t    create tokenless actor
   -u    use actor uid
   -v    verbose output
   -V    very verbose output
@@ -36,8 +37,9 @@ stateless="false"
 force="false"
 use_uid="false"
 tok=
+tokenized="true"
 
-while getopts ":he:E:pfsuvz:V" o; do
+while getopts ":he:E:pfsutvz:V" o; do
     case "${o}" in
         z) # custom token
             tok=${OPTARG}
@@ -59,6 +61,9 @@ while getopts ":he:E:pfsuvz:V" o; do
             ;;
         u) # use uid
             use_uid=true
+            ;;
+        t) # don't get token
+            tokenized="false"
             ;;
         v) # verbose
             verbose="true"
@@ -101,11 +106,11 @@ then
 fi
 # build command line env vars into json
 args_default_env=$(build_json_from_array "${env_args[@]}")
-#combine both 
+#combine both
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"stateless\":\"${stateless}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
+data="{\"stateless\":\"${stateless}\", \"token\":\"${tokenized}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}}"
 curlCommand="curl -X PUT -sk -H \"Authorization: Bearer $TOKEN\"  -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actorid}'"
 
 function filter() {
