@@ -40,6 +40,11 @@ function do_preflight() {
     fi
 }
 
+# print usage if no arguments were given
+if [[ "$#" -lt "1" ]]; then
+    usage
+fi
+
 while getopts ":hpvz:V" o; do
     case "${o}" in
     z) # custom token

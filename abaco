@@ -22,10 +22,8 @@ Commands:
   init                          create a new actor project
   deploy                        build and deploy an actor
   version                       report CLI and service versions
+  aliases, alias                manage aliases for actors
 
-Subcommands:
-  aliases                       manage aliases for actors
-  nonces                        manage nonces for actors
 
 GitHub Issues:
   https://github.com/TACC-Cloud/abaco-cli/issues
@@ -36,6 +34,8 @@ Documentation:
 Help:
   support@tacc.cloud
 "
+#  nonces                        manage nonces for actors
+
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -110,10 +110,10 @@ aliases | alias)
     bash $DIR/abaco-aliases.sh "$@"
     ;;
 
-nonces | nonce)
-    shift
-    bash $DIR/abaco-nonces.sh "$@"
-    ;;
+#nonces | nonce)
+#    shift
+#    bash $DIR/abaco-nonces.sh "$@"
+#    ;;
 
 *)
     shift
