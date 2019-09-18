@@ -34,27 +34,25 @@ $ abaco -h
 
 Usage: abaco [COMMAND] [OPTION]...
 
-Set of commands for interacting with Abaco API. Options vary by
+Set of commands for interacting with Abaco API. Options vary by     
 command; use -h flag after command to view usage details.
 
 Commands:
-  list, ls, actors, images	list actors
+  list, ls, actors, images      list actors
   create, make, register        create new actor
   delete, remove, rm            remove actor
   update, change                update base Docker image
-  permissions, share            list and update actor permissions
+  permissions, share            list and update actor permissions   
   workers, worker               view and add workers
   submit, run                   run actor
   executions                    view actor executions
   messages, mailbox             count (or purge) an actor's messages
-  logs				view execution logs
+  logs                          view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
-  version                       report CLI and service versions
+  version                       report CLI and service versions     
+  aliases, alias                manage aliases for actors
 
-Subcommands:
-  aliases                       manage aliases for actors
-  nonces                        manage nonces for actors
 
 GitHub Issues:
   https://github.com/TACC-Cloud/abaco-cli/issues
@@ -79,9 +77,9 @@ an actor if an ID or alias is provided)
 
 Options:
   -h	show help message
-  -z    oauth access token
+  -z  oauth access token
   -v	verbose output
-  -V    very verbose output
+  -V  very verbose output
 ```
 
 
