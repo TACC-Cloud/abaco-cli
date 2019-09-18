@@ -5,11 +5,9 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID | ALIAS]
+Usage: ${THIS} [OPTION]... [ALIAS]
 
-Returns list of actor names, IDs, and statuses (or the JSON description of
-an actor if an ID or alias is provided)
+Deletes the specified alias
 
 Options:
   -h	show help message
@@ -52,17 +50,16 @@ if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-actor="$1"
-if [ -z "$actor" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2'"
-else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor'"
-    verbose="true"
+alias_id="$1"
+if [ -z "${alias_id}" ]; then
+    echo "Please specify an alias at end of this command"
+    usage
 fi
 
+curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" -X DELETE '$BASE_URL/actors/v2/aliases/${alias_id}'"
+
 function filter() {
-    #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+    eval $@ | jq -r '.message'
 }
 
 if [[ "$very_verbose" == "true" ]]; then

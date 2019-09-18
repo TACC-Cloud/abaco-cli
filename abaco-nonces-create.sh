@@ -5,15 +5,17 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID | ALIAS]
+Usage: ${THIS} [OPTION] [ACTORID]
 
-Returns list of actor names, IDs, and statuses (or the JSON description of
-an actor if an ID or alias is provided)
+Creates a nonce for an actor. Default maximum uses is -1
+(unlimited). Access levels are READ, EXECUTE, and UPDATE.
 
 Options:
   -h	show help message
   -z    oauth access token
+  -d    short nonce description
+  -m    maximum uses
+  -l    access level
   -v	verbose output
   -V    very verbose output
 "
@@ -28,11 +30,23 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$DIR/abaco-common.sh"
 tok=
+maxuses=-1
+level=EXECUTE
+description=
 
-while getopts ":hvz:V" o; do
+while getopts ":hl:m:z:d:Vv" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
+        ;;
+    m) # maxUses
+        maxuses=${OPTARG}
+        ;;
+    l) # access level
+        level=${OPTARG}
+        ;;
+    d) # optional description
+        description=${OPTARG}
         ;;
     v) # verbose
         verbose="true"
@@ -52,17 +66,19 @@ if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-actor="$1"
-if [ -z "$actor" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2'"
-else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor'"
-    verbose="true"
+actor_id="$1"
+
+if [ -z "${actor_id}" ]; then
+    echo "Please provide an actor id."
+    usage
 fi
+
+data="{\"maxUses\":\"${maxuses}\", \"level\":\"${level}\", \"description\":\"${description}\"}"
+curlCommand="curl -XPOST -sk -H \"Authorization: Bearer $TOKEN\" -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actor_id}/nonces'"
 
 function filter() {
     #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+    eval $@ | jq -r '.result | [.id, .maxUses, .remainingUses, .level] | "\(.[0]) \(.[1]) \(.[2]) \(.[3])"' | column -t
 }
 
 if [[ "$very_verbose" == "true" ]]; then

@@ -5,11 +5,9 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID | ALIAS]
+Usage: ${THIS} [OPTION]... [ACTORID] [NONCE]
 
-Returns list of actor names, IDs, and statuses (or the JSON description of
-an actor if an ID or alias is provided)
+Deletes a nonce for a actor.
 
 Options:
   -h	show help message
@@ -46,23 +44,23 @@ while getopts ":hvz:V" o; do
     esac
 done
 shift $((OPTIND - 1))
+actor="$1"
+nonce="$2"
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
 if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-actor="$1"
-if [ -z "$actor" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2'"
-else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor'"
-    verbose="true"
+if [ -z "${actor}" ] || [ -z "${nonce}" ]; then
+    echo "Please specify an actor and nonce id"
+    usage
 fi
 
+curlCommand="curl -XDELETE -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/${actor}/nonces/${nonce}'"
+
 function filter() {
-    #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+    eval $@ | jq -r '.message'
 }
 
 if [[ "$very_verbose" == "true" ]]; then

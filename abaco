@@ -14,54 +14,110 @@ Commands:
   delete, remove, rm            remove actor
   update, change                update base Docker image
   permissions, share            list and update actor permissions
-  nonces, keys                  list and update actor nonces
   workers, worker               view and add workers
   submit, run                   run actor
   executions                    view actor executions
+  messages, mailbox             count (or purge) an actor's messages
   logs				view execution logs
   init                          create a new actor project
   deploy                        build and deploy an actor
-"
+  version                       report CLI and service versions
+  aliases, alias                manage aliases for actors
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+GitHub Issues:
+  https://github.com/TACC-Cloud/abaco-cli/issues
+
+Documentation:
+  Abaco: https://abaco.readthedocs.io/en/latest/
+
+Help:
+  support@tacc.cloud
+"
+#  nonces                        manage nonces for actors
+
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$1" in
-  list|ls|actors|images)	shift;
-    	bash $DIR/abaco-list.sh "$@";;
+list | ls | actors | images)
+    shift
+    bash $DIR/abaco-list.sh "$@"
+    ;;
 
-  create|make|register)       	shift;
-    	bash $DIR/abaco-create.sh "$@";;
+create | make | register)
+    shift
+    bash $DIR/abaco-create.sh "$@"
+    ;;
 
-  delete|remove|rm)    		shift;
-    	bash $DIR/abaco-delete.sh "$@";;
+delete | remove | rm)
+    shift
+    bash $DIR/abaco-delete.sh "$@"
+    ;;
 
-  update|change)                shift;
-      bash $DIR/abaco-update.sh "$@";;
+update | change)
+    shift
+    bash $DIR/abaco-update.sh "$@"
+    ;;
 
-  permissions|share)            shift;
-      bash $DIR/abaco-permissions.sh "$@";;
+permissions | share)
+    shift
+    bash $DIR/abaco-permissions.sh "$@"
+    ;;
 
-  nonces|keys)            shift;
-      bash $DIR/abaco-nonces.sh "$@";;
+workers | worker)
+    shift
+    bash $DIR/abaco-workers.sh "$@"
+    ;;
 
-  workers|worker)		shift;
-    	bash $DIR/abaco-workers.sh "$@";;
+submit | run)
+    shift
+    bash $DIR/abaco-submit.sh "$@"
+    ;;
 
-  submit|run)			shift;
-    	bash $DIR/abaco-submit.sh "$@";;
+executions)
+    shift
+    bash $DIR/abaco-executions.sh "$@"
+    ;;
 
-  executions)                   shift;
-      bash $DIR/abaco-executions.sh "$@";;
+logs)
+    shift
+    bash $DIR/abaco-logs.sh "$@"
+    ;;
 
-  logs)                         shift;
-      bash $DIR/abaco-logs.sh "$@";;
+deploy)
+    shift
+    bash $DIR/abaco-deploy.sh "$@"
+    ;;
 
-  deploy)                         shift;
-      bash $DIR/abaco-deploy.sh "$@";;
+init)
+    shift
+    bash $DIR/abaco-init.sh "$@"
+    ;;
 
-  init)                         shift;
-      bash $DIR/abaco-init.sh "$@";;
+version)
+    shift
+    bash $DIR/abaco-version.sh "$@"
+    ;;
 
-  *) 				shift;
-	   echo "$HELP"; exit 0;;
+messages | mailbox)
+    shift
+    bash $DIR/abaco-messages.sh "$@"
+    ;;
+
+aliases | alias)
+    shift
+    bash $DIR/abaco-aliases.sh "$@"
+    ;;
+
+#nonces | nonce)
+#    shift
+#    bash $DIR/abaco-nonces.sh "$@"
+#    ;;
+
+*)
+    shift
+    echo "$HELP"
+    exit 0
+    ;;
 esac

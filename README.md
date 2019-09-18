@@ -4,11 +4,11 @@
 
 Command line interface for working with the Abaco (Actor Based Containers) API
 
-Dependent upon [jq](https://stedolan.github.io/jq/), getopts, and the [Agave CLI](https://bitbucket.org/agaveapi/cli)
+Dependent upon [jq](https://stedolan.github.io/jq/), getopts, and the [Tapis CLI](https://github.com/TACC-Cloud/agave-cli)
 
 ## Installation and set up
 
-Clone the repo, enable bash completion, and add the contents of the cloned repo to your path. Then, pull and cache a valid SD2E access token using the Agave CLI.
+Clone the repo, enable bash completion, and add the contents of the cloned repo to your path. Then, pull and cache a valid access token using the Agave CLI.
 ```
 $ git clone https://github.com/TACC-Cloud/abaco-cli.git
 $ source abaco-cli/abaco-completion.sh
@@ -18,35 +18,70 @@ $ auth-tokens-create -S
 
 ## Usage
 
-There are eleven possible commands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
+There are **15** subcommands. They can be seen using the tab completion set up above; simply set up the `abaco` command and hit the tab key twice.
 ```
-$ abaco 
-create    deploy       init    logs           submit    workers
-delete    executions   list    permissions    update
+$ abaco
+aliases      deploy       list         nonces       update
+create       executions   logs         permissions  version
+delete       init         messages     submit       workers
 ```
 
-Each command has a help message, which can be viewed with the `-h` flag. The `abaco` command also has a help message that overviews the function of each command, as shown below.
+Each subcommand has a help message, which can be viewed with the `-h` flag.
+The `abaco` command has a help message:
+
 ```
 $ abaco -h
 
 Usage: abaco [COMMAND] [OPTION]...
 
-Set of commands for interacting with Abaco API. Options vary by 
+Set of commands for interacting with Abaco API. Options vary by     
 command; use -h flag after command to view usage details.
 
 Commands:
-  list, ls, actors, images    list actors
-  create, make, register      create new actor
-  delete, remove, rm          remove actor
-  update, change              update base Docker image
-  permissions, share          list and update actor permissions
-  workers, worker             view and add workers
-  submit, run                 run actor
-  executions                  view actor executions
-  logs                        view execution logs
-  init                        create a new actor project
-  deploy                      build and deploy an actor
+  list, ls, actors, images      list actors
+  create, make, register        create new actor
+  delete, remove, rm            remove actor
+  update, change                update base Docker image
+  permissions, share            list and update actor permissions   
+  workers, worker               view and add workers
+  submit, run                   run actor
+  executions                    view actor executions
+  messages, mailbox             count (or purge) an actor's messages
+  logs                          view execution logs
+  init                          create a new actor project
+  deploy                        build and deploy an actor
+  version                       report CLI and service versions     
+  aliases, alias                manage aliases for actors
+
+
+GitHub Issues:
+  https://github.com/TACC-Cloud/abaco-cli/issues
+
+Documentation:
+  Abaco: https://abaco.readthedocs.io/en/latest/
+
+Help:
+  support@tacc.cloud
 ```
+
+Each subcommand also has a help option. For example:
+
+```
+$ abaco list -h
+
+Usage: abaco list [OPTION]...
+       abaco list [OPTION]... [ACTORID | ALIAS]
+
+Returns list of actor names, IDs, and statuses (or the JSON description of
+an actor if an ID or alias is provided)
+
+Options:
+  -h	show help message
+  -z  oauth access token
+  -v	verbose output
+  -V  very verbose output
+```
+
 
 ## Tutorial
 
@@ -93,62 +128,62 @@ $ abaco logs JmlG71b4rxOrv WxeyJbqxQbK6W
 Logs for execution WxeyJbqxQbK6W:
 FULL CONTEXT:
 {
-  "username": "jturcino", 
-  "HOSTNAME": "d10bb601307c", 
-  "_abaco_actor_id": "JmlG71b4rxOrv", 
-  "raw_message": "{'key2': 'value2', 'key1': 'value1'}", 
-  "actor_dbid": "SD2E_JmlG71b4rxOrv", 
-  "_abaco_actor_state": "{}", 
-  "content_type": null, 
-  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 
-  "MSG": "{'key2': 'value2', 'key1': 'value1'}", 
-  "bar": "baz", 
-  "_abaco_api_server": "https://api.sd2e.org", 
-  "_abaco_Content_Type": "application/json", 
-  "execution_id": "WxeyJbqxQbK6W", 
-  "_abaco_access_token": "XXXXXXXXXXXXXXXXXXXXXXXXXX", 
+  "username": "jturcino",
+  "HOSTNAME": "d10bb601307c",
+  "_abaco_actor_id": "JmlG71b4rxOrv",
+  "raw_message": "{'key2': 'value2', 'key1': 'value1'}",
+  "actor_dbid": "SD2E_JmlG71b4rxOrv",
+  "_abaco_actor_state": "{}",
+  "content_type": null,
+  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+  "MSG": "{'key2': 'value2', 'key1': 'value1'}",
+  "bar": "baz",
+  "_abaco_api_server": "https://api.sd2e.org",
+  "_abaco_Content_Type": "application/json",
+  "execution_id": "WxeyJbqxQbK6W",
+  "_abaco_access_token": "XXXXXXXXXXXXXXXXXXXXXXXXXX",
   "message_dict": {
-    "key2": "value2", 
+    "key2": "value2",
     "key1": "value1"
-  }, 
-  "_abaco_actor_dbid": "SD2E_JmlG71b4rxOrv", 
-  "_abaco_jwt_header_name": "X-Jwt-Assertion-Sd2E", 
-  "_abaco_execution_id": "WxeyJbqxQbK6W", 
-  "state": "{}", 
-  "_abaco_username": "jturcino", 
-  "actor_id": "JmlG71b4rxOrv", 
-  "foo": "bar", 
+  },
+  "_abaco_actor_dbid": "SD2E_JmlG71b4rxOrv",
+  "_abaco_jwt_header_name": "X-Jwt-Assertion-Sd2E",
+  "_abaco_execution_id": "WxeyJbqxQbK6W",
+  "state": "{}",
+  "_abaco_username": "jturcino",
+  "actor_id": "JmlG71b4rxOrv",
+  "foo": "bar",
   "HOME": "/"
 }
 
 MESSAGE:
 {
-  "key2": "value2", 
+  "key2": "value2",
   "key1": "value1"
 }
 
 FULL ENVIRONMENT:
 {
-  "_abaco_actor_state": "{}", 
-  "foo": "bar", 
-  "bar": "baz", 
-  "_abaco_actor_dbid": "SD2E_JmlG71b4rxOrv", 
-  "_abaco_jwt_header_name": "X-Jwt-Assertion-Sd2E", 
-  "_abaco_execution_id": "WxeyJbqxQbK6W", 
-  "_abaco_username": "jturcino", 
-  "HOSTNAME": "d10bb601307c", 
-  "_abaco_actor_id": "JmlG71b4rxOrv", 
-  "_abaco_access_token": "XXXXXXXXXXXXXXXXXXXXXXXXXX", 
-  "MSG": "{'key2': 'value2', 'key1': 'value1'}", 
-  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 
-  "_abaco_api_server": "https://api.sd2e.org", 
-  "HOME": "/", 
+  "_abaco_actor_state": "{}",
+  "foo": "bar",
+  "bar": "baz",
+  "_abaco_actor_dbid": "SD2E_JmlG71b4rxOrv",
+  "_abaco_jwt_header_name": "X-Jwt-Assertion-Sd2E",
+  "_abaco_execution_id": "WxeyJbqxQbK6W",
+  "_abaco_username": "jturcino",
+  "HOSTNAME": "d10bb601307c",
+  "_abaco_actor_id": "JmlG71b4rxOrv",
+  "_abaco_access_token": "XXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "MSG": "{'key2': 'value2', 'key1': 'value1'}",
+  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+  "_abaco_api_server": "https://api.sd2e.org",
+  "HOME": "/",
   "_abaco_Content_Type": "application/json"
 }
 
 ROOT FILES:
-bin boot dev etc home lib lib64 media mnt opt proc root run sbin srv 
-sys tmp usr var agavepy script.py requirements.txt .dockerenv work 
+bin boot dev etc home lib lib64 media mnt opt proc root run sbin srv
+sys tmp usr var agavepy script.py requirements.txt .dockerenv work
 corral corral-repl
 ```
 
@@ -159,7 +194,7 @@ jfonner     EXECUTE
 jturcino    UPDATE
 ```
 
-8. **Update the actor** with `abaco update` to use a new Docker container. Say we have updated `jturcino/abaco-trial` to have a new tag, `latest`, that we now want our actor to use. 
+8. **Update the actor** with `abaco update` to use a new Docker container. Say we have updated `jturcino/abaco-trial` to have a new tag, `latest`, that we now want our actor to use.
 ```
 $ abaco update JmlG71b4rxOrv jturcino/abaco-trial:update
 tutorial-example  JmlG71b4rxOrv  jturcino/abaco-trial:update

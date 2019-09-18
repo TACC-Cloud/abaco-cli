@@ -5,10 +5,10 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID | ALIAS] [EXECUTIONID]
+Usage: ${THIS} [OPTION]... [ACTORID] [NONCE]
 
-Returns list of execution IDs for the provided actor or description
-of execution if execution ID provided.
+Returns a list of nonces for an actor or a single record
+if a nonce id is also provided.
 
 Options:
   -h	show help message
@@ -46,31 +46,31 @@ while getopts ":hvz:V" o; do
 done
 shift $((OPTIND - 1))
 actor="$1"
-execution="$2"
+nonce="$2"
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
 if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-if [ -z "$actor" ]; then
-    echo "Please specify actor"
+if [ -z "${actor}" ]; then
+    echo "Please specify an actor id"
     usage
 fi
 
-if [ -z "$execution" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor/executions'"
+if [ -z "${nonce}" ]; then
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/${actor}/nonces'"
 else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor/executions/$execution'"
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/${actor}/nonces/${nonce}'"
 fi
 
 function filter_list() {
-    eval $@ | jq -r '.result | .executions | .[] | [.id, .status] | "\(.[0]) \(.[1])"' | column -t
+    eval $@ | jq -r '.result | .[] | [.id, .actorId, .owner, .description] | "\(.[0]) \(.[1]) \(.[2]) \(.[3])"' | column -t
 }
 
 function filter_description() {
     #    eval $@ | jq -r '.result | [.workerId, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | [.workerId, .status] | "\(.[0]) \(.[1])"' | column -t
+    eval $@ | jq -r '.result | [.id, .actorId, .owner, .level, .lastUseTime, .description ] | "\(.[0]) \(.[1]) \(.[2]) \(.[3]) \(.[4]) \(.[5])"' | column -t
 }
 
 if [[ "$very_verbose" == "true" ]]; then
@@ -80,7 +80,7 @@ fi
 if [[ "$verbose" == "true" ]]; then
     eval $curlCommand
 else
-    if [ -z "$execution" ]; then
+    if [ -z "${nonce}" ]; then
         filter_list $curlCommand
     else
         filter_description $curlCommand

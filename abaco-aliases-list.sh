@@ -6,10 +6,9 @@ THIS=${THIS//[-]/ }
 
 HELP="
 Usage: ${THIS} [OPTION]...
-       ${THIS} [OPTION]... [ACTORID | ALIAS]
+       ${THIS} [OPTION]... [ALIAS]
 
-Returns list of actor names, IDs, and statuses (or the JSON description of
-an actor if an ID or alias is provided)
+Returns one alias or a listing of all known aliases
 
 Options:
   -h	show help message
@@ -52,17 +51,17 @@ if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-actor="$1"
-if [ -z "$actor" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2'"
+alias_id="$1"
+if [ -z "$alias_id" ]; then
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/aliases'"
 else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor'"
+    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/aliases/$alias_id'"
     verbose="true"
 fi
 
 function filter() {
     #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+    eval $@ | jq -r '.result | .[] | [.alias, .actorId, .owner] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
 }
 
 if [[ "$very_verbose" == "true" ]]; then

@@ -8,12 +8,12 @@ HELP="
 Usage: ${THIS} [OPTION]...
        ${THIS} [OPTION]... [ACTORID | ALIAS]
 
-Returns list of actor names, IDs, and statuses (or the JSON description of
-an actor if an ID or alias is provided)
+Count (or purge) messages in an actor's mailbox
 
 Options:
   -h	show help message
   -z    oauth access token
+  -X    purge all messages
   -v	verbose output
   -V    very verbose output
 "
@@ -28,11 +28,15 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$DIR/abaco-common.sh"
 tok=
+purge=0
 
-while getopts ":hvz:V" o; do
+while getopts ":hvXz:V" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
+        ;;
+    X) # purge
+        purge=1
         ;;
     v) # verbose
         verbose="true"
@@ -46,23 +50,32 @@ while getopts ":hvz:V" o; do
     esac
 done
 shift $((OPTIND - 1))
+actor="$1"
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
+
 if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
-actor="$1"
 if [ -z "$actor" ]; then
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2'"
-else
-    curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" '$BASE_URL/actors/v2/$actor'"
-    verbose="true"
+    die "Actor identifier or alias is required."
 fi
 
-function filter() {
-    #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+if !((purge)); then
+    curlCommand="curl -XGET -sk -H \"Authorization: Bearer ${TOKEN}\" '${BASE_URL}/actors/v2/${actor}/messages'"
+else
+    curlCommand="curl -XDELETE -sk -H \"Authorization: Bearer ${TOKEN}\" '${BASE_URL}/actors/v2/${actor}/messages'"
+fi
+
+function filter_count() {
+    info "Message count"
+    eval $@ | jq -r .result.messages
+}
+
+function filter_purge() {
+    info "Purging messages..."
+    eval $@ | jq -r .result.msg
 }
 
 if [[ "$very_verbose" == "true" ]]; then
@@ -72,5 +85,9 @@ fi
 if [[ "$verbose" == "true" ]]; then
     eval $curlCommand
 else
-    filter $curlCommand
+    if ((purge)); then
+        filter_purge $curlCommand
+    else
+        filter_count $curlCommand
+    fi
 fi

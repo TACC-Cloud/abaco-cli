@@ -5,14 +5,14 @@ THIS=${THIS%.sh}
 THIS=${THIS//[-]/ }
 
 HELP="
-Usage: ${THIS} [OPTION]... [ACTORID]
+Usage: ${THIS} [OPTION]... [ACTORID | ALIAS]
 
-Returns list of worker IDs and statuses or JSON description of worker 
+Returns list of worker IDs and statuses or JSON description of worker
 if worker ID provided with -w flag. Use -n flag to change worker count.
 
 Options:
   -h	show help message
-  -z    api access token
+  -z    oauth access token
   -n    change worker count
   -w	worker ID
   -v	verbose output
@@ -20,40 +20,42 @@ Options:
 "
 
 #function usage() { echo "$0 usage:" && grep " .)\ #" $0; exit 0; }
-function usage() { echo "$HELP"; exit 0; }
+function usage() {
+    echo "$HELP"
+    exit 0
+}
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$DIR/abaco-common.sh"
 tok=
 
 while getopts ":hvw:n:z:V" o; do
     case "${o}" in
-        z) # custom token
-            tok=${OPTARG}
-            ;;        
-        w) # worker
-            worker=${OPTARG}
-            ;;
-        n) # worker number
-            num=${OPTARG}
-            ;;
-        v) # verbose
-            verbose="true"
-            ;;
-        V) # verbose
-            very_verbose="true"
-            ;;            
-        h | *) # print help text
-            usage
-            ;;
+    z) # custom token
+        tok=${OPTARG}
+        ;;
+    w) # worker
+        worker=${OPTARG}
+        ;;
+    n) # worker number
+        num=${OPTARG}
+        ;;
+    v) # verbose
+        verbose="true"
+        ;;
+    V) # verbose
+        very_verbose="true"
+        ;;
+    h | *) # print help text
+        usage
+        ;;
     esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 if [ ! -z "$tok" ]; then TOKEN=$tok; fi
-if [[ "$very_verbose" == "true" ]];
-then
+if [[ "$very_verbose" == "true" ]]; then
     verbose="true"
 fi
 
@@ -62,7 +64,6 @@ if [ -z "$actor" ]; then
     echo "Please specify actor"
     usage
 fi
-
 
 if ! [ -z "$num" ]; then
     curlCommand="curl -sk -H \"Authorization: Bearer $TOKEN\" -X POST -d 'num=$num' '$BASE_URL/actors/v2/$actor/workers'"
@@ -77,13 +78,12 @@ function filter() {
     if ! [ -z "$num" ]; then
         eval $@ | jq -r '.message'
     else
-#        eval $@ | jq -r '.result | .[] | [.id, .status] | @tsv' | column -t
+        #        eval $@ | jq -r '.result | .[] | [.id, .status] | @tsv' | column -t
         eval $@ | jq -r '.result | .[] | [.id, .status] | "\(.[0]) \(.[1])"' | column -t
     fi
 }
 
-if [[ "$very_verbose" == "true" ]];
-then
+if [[ "$very_verbose" == "true" ]]; then
     echo "Calling $curlCommand"
 fi
 

@@ -1,11 +1,40 @@
 #!/bin/bash
 
-if [[ ! -x $( which jq ) ]]; then
+if [[ ! -x $(which jq) ]]; then
     echo "Error: jq was not found."
     echo "This CLI requires jq. Please install it first."
     echo " - https://stedolan.github.io/jq/download/"
     exit 1
 fi
+
+tapis_cli_avail=0
+if [[ "${ABACO_ENABLE_AUTO_REFRESH}" == "1" ]]; then
+    if ! ((tapis_cli_avail)); then
+        if [[ -z "${TAPIS_CLI_PATH}" ]] || [[ -d "${TAPIS_CLI_PATH}" ]]; then
+            TAPIS_CLI_PATH=$(dirname $(which auth-tokens-refresh))
+        fi
+        if [[ -f ${TAPIS_CLI_PATH}/auth-tokens-refresh ]]; then
+            tapis_cli_avail=1
+            export tapis_cli_avail
+        fi
+    fi
+fi
+export tapis_cli_avail
+
+git_cli_avail=0
+ABACO_USE_GIT_CLI=1
+if [[ "${ABACO_USE_GIT_CLI}" == "1" ]]; then
+    if ! ((git_cli_avail)); then
+        if [[ -z "${GIT_CLI_PATH}" ]] || [[ -d "${GIT_CLI_PATH}" ]]; then
+            GIT_CLI_PATH=$(dirname $(which git))
+        fi
+        if [[ -f ${GIT_CLI_PATH}/git ]]; then
+            git_cli_avail=1
+            export git_cli_avail
+        fi
+    fi
+fi
+export git_cli_avail
 
 AGAVE_AUTH_CACHE=
 if [ ! -z "${AGAVE_CACHE_DIR}" ] && [ -d "${AGAVE_CACHE_DIR}" ]; then
@@ -20,13 +49,6 @@ if [ ! -f "${AGAVE_AUTH_CACHE}" ]; then
     exit 1
 fi
 
-BASE_URL=$(jq -r .baseurl ${AGAVE_AUTH_CACHE})
-CLIENT_SECRET=$(jq -r .apisecret  ${AGAVE_AUTH_CACHE})
-CLIENT_KEY=$(jq -r .apikey  ${AGAVE_AUTH_CACHE})
-USERNAME=$(jq -r .username  ${AGAVE_AUTH_CACHE})
-TOKEN=$(jq -r .access_token  ${AGAVE_AUTH_CACHE})
-TENANTID=$(jq -r .tenantid  ${AGAVE_AUTH_CACHE})
-
 function build_json_from_array() {
     local myarray=("$@")
     local var_count=${#myarray[@]}
@@ -36,7 +58,7 @@ function build_json_from_array() {
         exit 0
     fi
 
-    local last_index=$((${#myarray[@]}-1))
+    local last_index=$((${#myarray[@]} - 1))
     local json="{"
     for i in $(seq 0 $last_index); do
         local key_value=${myarray[$i]}
@@ -89,3 +111,24 @@ function info() {
     echo "[INFO] $1"
 
 }
+
+function refresh_access_token() {
+    if ((tapis_cli_avail)); then
+        echo "Refreshing..."
+        auth-tokens-refresh -q
+    fi
+}
+
+refresh_access_token
+
+BASE_URL=$(jq -r .baseurl ${AGAVE_AUTH_CACHE})
+CLIENT_SECRET=$(jq -r .apisecret ${AGAVE_AUTH_CACHE})
+CLIENT_KEY=$(jq -r .apikey ${AGAVE_AUTH_CACHE})
+USERNAME=$(jq -r .username ${AGAVE_AUTH_CACHE})
+TOKEN=$(jq -r .access_token ${AGAVE_AUTH_CACHE})
+TENANTID=$(jq -r .tenantid ${AGAVE_AUTH_CACHE})
+if [[ ! -z "${DOCKER_HUB_ORG}" ]]; then
+    REGISTRY_USERNAME=${DOCKER_HUB_ORG}
+else
+    REGISTRY_USERNAME=${USERNAME}
+fi
