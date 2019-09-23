@@ -11,19 +11,20 @@ Creates an Abaco actor from the provided Docker image, returning the name
 and ID of the actor.
 
 Options:
--h    show help message
--z    oauth access token
--n    name of actor
--e    set environment variables (key=value)
--E    read environment variables from json file
--p    make privileged actor
--f    force actor update
--s    create a stateless actor (default)
--S    create a stateful actor
--A    disable creation of Tapis tokens
--u    use actor uid
--v    verbose output
--V    very verbose output
+  -h    show help message
+  -z    oauth access token
+  -n    name of actor
+  -e    set environment variables (key=value)
+  -E    read environment variables from json file
+  -H    include a hint during actor creation
+  -p    make privileged actor
+  -f    force actor update
+  -s    create a stateless actor (default)
+  -S    create a stateful actor
+  -A    disable creation of Tapis tokens
+  -u    use actor uid
+  -v    verbose output
+  -V    very verbose output
 "
 
 #displayonly
@@ -47,7 +48,7 @@ tok=
 env_json=
 declare -a env_args
 
-while getopts ":hn:e:E:pfsSuvz:AV" o; do
+while getopts ":hn:H:e:E:pfsSuvz:AV" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
@@ -60,6 +61,9 @@ while getopts ":hn:e:E:pfsSuvz:AV" o; do
         ;;
     E) # default environment (json file)
         env_json=${OPTARG}
+        ;;
+    H) # hint (string)
+        hint=${OPTARG}
         ;;
     p) # privileged
         privileged="true"
@@ -108,6 +112,11 @@ if [ -z "$name" ]; then
     usage
 fi
 
+# put quotes around $hint if it is not a dictionary of terms.
+if [ -n "$hint" ] && [ ! "${hint:0:1}" == "[" ]; then
+    hint="\"$hint\""
+fi
+
 # default env
 # check env vars json file (exists, have contents, be json)
 file_default_env=
@@ -123,7 +132,7 @@ args_default_env=$(build_json_from_array "${env_args[@]}")
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}}"
+data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}, \"hints\":${hint}}"
 curlCommand="curl -X POST -sk -H \"Authorization: Bearer $TOKEN\" -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2'"
 
 function filter() {

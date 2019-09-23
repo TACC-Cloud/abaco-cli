@@ -62,7 +62,7 @@ fi
 
 function filter() {
     #    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | @tsv' | column -t
-    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t
+    eval $@ | jq -r '.result | .[] | [.name, .id, .status] | "\(.[0]) \(.[1]) \(.[2])"' | column -t | sort
 }
 
 if [[ "$very_verbose" == "true" ]]; then
