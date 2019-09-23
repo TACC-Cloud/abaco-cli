@@ -397,8 +397,6 @@ fi
 RESP=$(eval ${DIR}/${cmd})
 ACTOR_ID=$(echo ${RESP} | jq -r .result.id)
 
-echo $RESP
-
 if [[ "$ACTOR_ID" == "null" ]]; then
   die "Failed to deploy actor $REACTOR_NAME"
 fi
