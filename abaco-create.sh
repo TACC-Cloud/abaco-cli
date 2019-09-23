@@ -112,9 +112,14 @@ if [ -z "$name" ]; then
     usage
 fi
 
-# put quotes around $hint if it is not a dictionary of terms.
-if [ -n "$hint" ] && [ ! "${hint:0:1}" == "[" ]; then
-    hint="\"$hint\""
+# build the hint argument if needed
+hintJSON=
+if [ -n "$hint" ]; then
+    # put quotes around $hint if it is not a dictionary of terms.
+    if [ ! "${hint:0:1}" == "[" ]; then
+        hint="\"$hint\""
+    fi
+    hintJSON=", \"hints\": ${hint}"
 fi
 
 # default env
@@ -132,7 +137,7 @@ args_default_env=$(build_json_from_array "${env_args[@]}")
 default_env=$(echo "$file_default_env $args_default_env" | jq -s add)
 
 # curl command
-data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}, \"hints\":${hint}}"
+data="{\"image\":\"${image}\", \"name\":\"${name}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}${hintJSON}}"
 curlCommand="curl -X POST -sk -H \"Authorization: Bearer $TOKEN\" -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2'"
 
 function filter() {

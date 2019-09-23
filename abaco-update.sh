@@ -102,9 +102,14 @@ if [ -z "$actorid" ] || [ -z "$image" ]; then
     usage
 fi
 
-# put quotes around $hint if it is not a dictionary of terms.
-if [ -n "$hint" ] && [ ! "${hint:0:1}" == "[" ]; then
-    hint="\"$hint\""
+# build the hint argument if needed
+hintJSON=
+if [ -n "$hint" ]; then
+    # put quotes around $hint if it is not a dictionary of terms.
+    if [ ! "${hint:0:1}" == "[" ]; then
+        hint="\"$hint\""
+    fi
+    hintJSON=", \"hints\": ${hint}"
 fi
 
 # default env
@@ -127,7 +132,7 @@ stateless=$(${DIR}/abaco ls -v ${actorid} | jq -r .result.stateless)
 
 # curl command
 # \"stateless\":\"${stateless}\",
-data="{\"image\":\"${image}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}, \"hints\":${hint}}"
+data="{\"image\":\"${image}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}${hintJSON}}"
 curlCommand="curl -X PUT -sk -H \"Authorization: Bearer $TOKEN\"  -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actorid}'"
 
 function filter() {
