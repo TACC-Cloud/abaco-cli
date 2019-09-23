@@ -22,6 +22,7 @@ Options:
   -s    override REACTOR_STATEFUL to deploy the actor as stateless
   -S    override REACTOR_STATEFUL to deploy the actor as stateful
   -A    override REACTOR_TOKENS to deploy actor without Tapis tokens
+  -H    include a hint during actor creation
   -p    don't pull source image when building
   -k    bypass Docker cache when building
   -K    skip pushing to the container registry
@@ -77,7 +78,7 @@ no_tokens=0
 verbose=0
 
 current_actor=
-while getopts ":hz:F:B:RpkUkKsvSDAO:c:t:" o; do
+while getopts ":hz:F:B:RH:pkUkKsvSDAO:c:t:" o; do
   case "${o}" in
   z) # API token
     tok=${OPTARG}
@@ -93,6 +94,9 @@ while getopts ":hz:F:B:RpkUkKsvSDAO:c:t:" o; do
     ;;
   c) # docker repo name
     passed_image_name=${OPTARG}
+    ;;
+  H) # hint (string)
+    hint=${OPTARG}
     ;;
   t) # docker repo tag
     passed_image_tag=${OPTARG}
@@ -351,6 +355,11 @@ fi
 # Pass -A to create if token issuance is to be disabled
 if ((no_tokens)); then
   ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -A"
+fi
+
+# Add a hint if one was given
+if [ -n "$hint" ]; then
+  ABACO_CREATE_OPTS="$ABACO_CREATE_OPTS -H '$hint'"
 fi
 
 # If updating, do not include name or stateless

@@ -16,6 +16,7 @@ Options:
   -z    oauth access token
   -e    set environment variables (key=value)
   -E    read environment variables from json file
+  -H    include a hint during actor creation
   -p    add privileged status
   -A    disable creation of Tapis tokens
   -u    use actor uid
@@ -43,7 +44,7 @@ tok=
 
 # the s and S opts are here to swallow them when passed - we do not allow
 # toggling between stateless and stateful via an update operation
-while getopts ":he:E:pfsSAuvz:V" o; do
+while getopts ":he:E:H:pfsSAuvz:V" o; do
     case "${o}" in
     z) # custom token
         tok=${OPTARG}
@@ -53,6 +54,9 @@ while getopts ":he:E:pfsSAuvz:V" o; do
         ;;
     E) # default environment (json file)
         env_json=${OPTARG}
+        ;;
+    H) # hint (string)
+        hint=${OPTARG}
         ;;
     p) # privileged
         privileged=true
@@ -98,6 +102,16 @@ if [ -z "$actorid" ] || [ -z "$image" ]; then
     usage
 fi
 
+# build the hint argument if needed
+hintJSON=
+if [ -n "$hint" ]; then
+    # put quotes around $hint if it is not a dictionary of terms.
+    if [ ! "${hint:0:1}" == "[" ]; then
+        hint="\"$hint\""
+    fi
+    hintJSON=", \"hints\": ${hint}"
+fi
+
 # default env
 # check env vars json file (exists, have contents, be json)
 file_default_env=
@@ -118,7 +132,7 @@ stateless=$(${DIR}/abaco ls -v ${actorid} | jq -r .result.stateless)
 
 # curl command
 # \"stateless\":\"${stateless}\",
-data="{\"stateless\":\"${stateless}\", \"image\":\"${image}\", \"privileged\":${privileged}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}}"
+data="{\"image\":\"${image}\", \"privileged\":${privileged}, \"stateless\":${stateless}, \"force\":${force}, \"useContainerUid\":${use_uid}, \"defaultEnvironment\":${default_env}, \"token\":${request_token}${hintJSON}}"
 curlCommand="curl -X PUT -sk -H \"Authorization: Bearer $TOKEN\"  -H \"Content-Type: application/json\" --data '$data' '$BASE_URL/actors/v2/${actorid}'"
 
 function filter() {
