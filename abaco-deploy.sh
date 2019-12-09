@@ -286,7 +286,7 @@ if [ ! -z "${passed_image_tag}" ]; then
   DOCKER_IMAGE_VERSION=${passed_image_tag}
 fi
 # Force image to have a :version
-if [ ! -z "${DOCKER_IMAGE_VERSION}" ]; then
+if [ -z "${DOCKER_IMAGE_VERSION}" ]; then
   DOCKER_IMAGE_VERSION="latest"
   echo "Defaulting to ${DOCKER_IMAGE_TAG}:latest"
 fi
