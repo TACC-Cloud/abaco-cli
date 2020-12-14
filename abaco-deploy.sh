@@ -196,7 +196,7 @@ done
 # Check existence and min version of Docker
 command -v docker >/dev/null 2>&1 || { die "Docker is not installed or accessible"; }
 DOCKER_VERSION="$(docker --version)"
-if [[ ! "$DOCKER_VERSION" =~ "Docker version 17" ]] && [[ ! "$DOCKER_VERSION" =~ "Docker version 18" ]] && [[ ! "$DOCKER_VERSION" =~ "Docker version 19" ]]; then
+if [[ ! "$DOCKER_VERSION" =~ "Docker version 17" ]] && [[ ! "$DOCKER_VERSION" =~ "Docker version 18" ]] && [[ ! "$DOCKER_VERSION" =~ "Docker version 19" ]] && [[ ! "$DOCKER_VERSION" =~ "Docker version 20" ]]; then
   die "${DOCKER_VERSION} is not recent enough."
 fi
 # Verify the user is logged into a Registry
